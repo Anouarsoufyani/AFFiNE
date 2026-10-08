@@ -1,0 +1,8 @@
+.runtime/
+node_modules/
+.env
+.env.*
+*.log
+*credentials*.json
+*tokens*.json
+coverage/

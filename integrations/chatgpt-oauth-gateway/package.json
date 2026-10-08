@@ -1,0 +1,21 @@
+{
+  "name": "affine-local-chatgpt-oauth-gateway",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node src/cli.mjs serve",
+    "sandbox:start": "node scripts/start-sandbox.mjs",
+    "sandbox:status": "node scripts/setup-sandbox.mjs",
+    "sandbox:forget": "node scripts/setup-sandbox.mjs --forget",
+    "test": "node --test test/*.test.mjs",
+    "test:keychain": "GATEWAY_TEST_KEYCHAIN=1 node --test test/keychain.test.mjs",
+    "build:keychain": "node scripts/build-keychain.mjs"
+  },
+  "dependencies": {
+    "jose": "^6.1.0"
+  }
+}
