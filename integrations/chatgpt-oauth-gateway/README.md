@@ -34,6 +34,37 @@ node src/cli.mjs tool --model gpt-6-luna
 
 Les modèles Luna/Sol sont des choix à vérifier dans le catalogue du compte. Aucune substitution silencieuse n’est effectuée. L’interface convient aux messages confidentiels : un texte passé en argument CLI peut apparaître dans l’historique du shell. Aucune commande ne demande un token OAuth en argument ou variable d’environnement.
 
+## Configuration BYOK dans AFFiNE
+
+Dans **Settings → Workspace → Integrations → AI BYOK (Beta)**, les profils serveur du sandbox utilisent les valeurs suivantes :
+
+| Champ                 | Valeur                                                                               |
+| --------------------- | ------------------------------------------------------------------------------------ |
+| Fournisseur           | **OpenAI**                                                                           |
+| Stockage              | **Server**                                                                           |
+| Endpoint personnalisé | `http://127.0.0.1:43187/v1`                                                          |
+| Dialecte              | **Responses API**                                                                    |
+| API key               | Clé d’accès locale générée par le gateway ; pas une clé API OpenAI ni un token OAuth |
+| Capacités déclarées   | **Chat & writing**, **Actions**, **Structured output**                               |
+
+Créer un profil distinct pour chaque modèle souhaité :
+
+| Profil                  | Model ID      |
+| ----------------------- | ------------- |
+| ChatGPT OAuth — Luna    | `gpt-6-luna`  |
+| ChatGPT OAuth — Sol     | `gpt-6-sol`   |
+| ChatGPT OAuth — 6.1 Sol | `gpt-6.1-sol` |
+
+Ces modèles doivent figurer dans le catalogue OAuth du compte connecté. Dans le sandbox préparé, les profils existent déjà : le profil Luna porte le nom **ChatGPT OAuth**, les deux autres **ChatGPT OAuth Sol** et **ChatGPT OAuth 6.1 Sol**. Aucun identifiant de modèle ni secret n’est à ressaisir pour changer leur priorité.
+
+Avec Copilot sur **Auto**, le backend utilise le premier profil compatible dans l’ordre BYOK, puis les modèles activés dans l’ordre de ce profil. Cette priorité concerne le workspace, pas uniquement une conversation. Un profil local desktop ou une cible explicite peut modifier le routage. Le profil **Ollama local embeddings** reste séparé.
+
+La clé d’accès locale est conservée dans le Trousseau (`local-access-v1`) et enregistrée de manière chiffrée dans les profils BYOK du sandbox. Ne jamais publier sa valeur dans Git ou les logs. Les tokens OAuth restent exclusivement dans le gateway ; ils ne sont pas à renseigner dans AFFiNE. Le panneau du gateway configure les profils via les mutations GraphQL officielles, sans modifier les clients ni le backend.
+
+**Portée locale :** `127.0.0.1` convient ici parce que le backend et le gateway tournent sur le même Mac. Depuis waroserv, un autre ordinateur ou un container, cette adresse désigne cet autre environnement et ne joint pas le gateway du Mac. Aucun raccordement à waroserv n’est configuré. Le gateway actuel exige le Keychain macOS et ne démarre pas sous Linux/Windows.
+
+**Limite du formulaire officiel :** la sauvegarde teste les capacités des modèles et peut dépasser le timeout de 15 secondes. Nos profils ont été préparés via les mutations BYOK officielles ; le changement de priorité a été validé par mutation puis inférence réelle. Le glisser-déposer manuel reste à vérifier. Voir [SANDBOX.md](SANDBOX.md) pour les résultats et les limites.
+
 ## Tokens et déconnexion
 
 Les secrets sont stockés dans des éléments **Generic Password** du Trousseau macOS, service `org.affine-local.chatgpt-oauth-gateway` :
